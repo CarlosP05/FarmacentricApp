@@ -1,107 +1,224 @@
 import customtkinter as ctk
-# Importamos la lógica que moviste a la nueva carpeta
 from logica.logica_auth import iniciar_sesion
 from vistas.vista_admin import DashboardAdmin
 from vistas.vista_cajero import VistaCajero
 from vistas.vista_rrhh import VistaRRHH
+from config_tema import COLORS, FONTS, RADIUS, INPUT_STYLE
 
-# 1. Configuración global de la estética (UI/UX)
-ctk.set_appearance_mode("Light")  # "Light" ideal para sistemas de salud. "Dark" también disponible.
-ctk.set_default_color_theme("blue")  # Colores de acento en azul marino
+# Configuración global de la apariencia
+ctk.set_appearance_mode("Light")
+ctk.set_default_color_theme("blue")
+
 
 class AplicacionFarmacentric(ctk.CTk):
     def __init__(self):
         super().__init__()
 
-        # Configuración de la ventana principal
-        self.title("Farmacentric - Acceso al Sistema")
-        self.geometry("400x500")
-        self.resizable(False, False) # Evitamos que el usuario deforme la pantalla de login
-        
-        # Centrar la ventana en la pantalla
+        self.title("Farmacentric — Acceso al Sistema")
+        self.geometry("820x520")
+        self.resizable(False, False)
+        self.configure(fg_color=COLORS["card_bg"])
         self.eval('tk::PlaceWindow . center')
 
         self.crear_pantalla_login()
 
     def crear_pantalla_login(self):
-        # Frame principal que contendrá los elementos (crea un efecto de tarjeta)
-        self.frame_login = ctk.CTkFrame(self, width=320, height=400, corner_radius=15)
-        self.frame_login.place(relx=0.5, rely=0.5, anchor="center")
+        # ── Panel Izquierdo: Branding ─────────────────────────────────────────
+        self.panel_marca = ctk.CTkFrame(
+            self, width=340, corner_radius=0,
+            fg_color=COLORS["sidebar_bg"]
+        )
+        self.panel_marca.pack(side="left", fill="y")
+        self.panel_marca.pack_propagate(False)
 
-        # Título
-        self.lbl_titulo = ctk.CTkLabel(self.frame_login, text="Farmacentric", font=("Roboto", 28, "bold"))
-        self.lbl_titulo.place(relx=0.5, rely=0.15, anchor="center")
-        
-        self.lbl_subtitulo = ctk.CTkLabel(self.frame_login, text="Sistema de Gestión Integral", font=("Roboto", 12), text_color="gray")
-        self.lbl_subtitulo.place(relx=0.5, rely=0.22, anchor="center")
+        # Espaciador superior
+        ctk.CTkFrame(self.panel_marca, fg_color="transparent", height=80).pack()
 
-        # Campo de Usuario
-        self.entrada_usuario = ctk.CTkEntry(self.frame_login, width=220, placeholder_text="Nombre de usuario")
-        self.entrada_usuario.place(relx=0.5, rely=0.4, anchor="center")
+        # Cruz médica — ícono central de salud
+        ctk.CTkLabel(
+            self.panel_marca, text="✚",
+            font=("Segoe UI", 60),
+            text_color=COLORS["success"]
+        ).pack()
 
-        # Campo de Contraseña (con el atributo show="*" para ocultar el texto)
-        self.entrada_password = ctk.CTkEntry(self.frame_login, width=220, placeholder_text="Contraseña", show="*")
-        self.entrada_password.place(relx=0.5, rely=0.55, anchor="center")
+        ctk.CTkLabel(
+            self.panel_marca, text="Farmacentric",
+            font=FONTS["logo"],
+            text_color=COLORS["sidebar_text"]
+        ).pack(pady=(12, 4))
 
-        # Etiqueta para mostrar errores (invisible por defecto)
-        self.lbl_error = ctk.CTkLabel(self.frame_login, text="", text_color="red", font=("Roboto", 10))
-        self.lbl_error.place(relx=0.5, rely=0.68, anchor="center")
+        ctk.CTkLabel(
+            self.panel_marca, text="Sistema de Gestión Integral",
+            font=FONTS["logo_sub"],
+            text_color=COLORS["sidebar_subtext"]
+        ).pack()
 
-        # Botón de Inicio de Sesión
-        self.btn_login = ctk.CTkButton(self.frame_login, text="Ingresar", width=220, font=("Roboto", 14, "bold"), command=self.validar_login)
-        self.btn_login.place(relx=0.5, rely=0.8, anchor="center")
+        # Separador decorativo
+        ctk.CTkFrame(
+            self.panel_marca, height=2, width=110,
+            fg_color=COLORS["primary_light"]
+        ).pack(pady=28)
+
+        # Características del sistema
+        for texto in ["🏥  Gestión de Inventario", "💳  Punto de Venta (POS)", "👥  Recursos Humanos"]:
+            ctk.CTkLabel(
+                self.panel_marca, text=texto,
+                font=FONTS["body_small"],
+                text_color=COLORS["sidebar_subtext"],
+                anchor="w"
+            ).pack(padx=40, pady=3, anchor="w")
+
+        # Slogan al fondo
+        ctk.CTkFrame(self.panel_marca, fg_color="transparent").pack(expand=True)
+        ctk.CTkLabel(
+            self.panel_marca, text="Salud · Confianza · Precisión",
+            font=FONTS["body_small"],
+            text_color="#4A6B8A"
+        ).pack(pady=24)
+
+        # ── Panel Derecho: Formulario ─────────────────────────────────────────
+        self.panel_form = ctk.CTkFrame(
+            self, corner_radius=0,
+            fg_color=COLORS["card_bg"]
+        )
+        self.panel_form.pack(side="right", fill="both", expand=True)
+
+        # Contenedor centrado dentro del panel derecho
+        form_container = ctk.CTkFrame(self.panel_form, fg_color="transparent")
+        form_container.place(relx=0.5, rely=0.5, anchor="center")
+
+        # Encabezado del formulario
+        ctk.CTkLabel(
+            form_container, text="Bienvenido de Vuelta",
+            font=FONTS["h1"],
+            text_color=COLORS["text_primary"]
+        ).pack(anchor="w")
+
+        ctk.CTkLabel(
+            form_container, text="Ingresa tus credenciales para continuar",
+            font=FONTS["body_small"],
+            text_color=COLORS["text_secondary"]
+        ).pack(anchor="w", pady=(4, 28))
+
+        # Campo: Usuario
+        ctk.CTkLabel(
+            form_container, text="Usuario",
+            font=FONTS["body"],
+            text_color=COLORS["text_secondary"],
+            anchor="w"
+        ).pack(fill="x")
+
+        self.entrada_usuario = ctk.CTkEntry(
+            form_container, width=290,
+            placeholder_text="ej. admin",
+            **INPUT_STYLE
+        )
+        self.entrada_usuario.pack(pady=(4, 16))
+        self.entrada_usuario.bind("<Return>", lambda e: self.entrada_password.focus())
+
+        # Campo: Contraseña
+        ctk.CTkLabel(
+            form_container, text="Contraseña",
+            font=FONTS["body"],
+            text_color=COLORS["text_secondary"],
+            anchor="w"
+        ).pack(fill="x")
+
+        self.entrada_password = ctk.CTkEntry(
+            form_container, width=290,
+            placeholder_text="••••••••",
+            show="•",
+            **INPUT_STYLE
+        )
+        self.entrada_password.pack(pady=(4, 6))
+        self.entrada_password.bind("<Return>", lambda e: self.validar_login())
+
+        # Mensaje de error / éxito
+        self.lbl_error = ctk.CTkLabel(
+            form_container, text="",
+            font=FONTS["body_small"],
+            text_color=COLORS["danger"]
+        )
+        self.lbl_error.pack(pady=(4, 16))
+
+        # Botón de inicio de sesión
+        self.btn_login = ctk.CTkButton(
+            form_container,
+            text="Iniciar Sesión  →",
+            width=290, height=46,
+            corner_radius=RADIUS["btn_lg"],
+            fg_color=COLORS["primary_light"],
+            hover_color=COLORS["primary_hover"],
+            text_color="#FFFFFF",
+            font=FONTS["btn_large"],
+            command=self.validar_login
+        )
+        self.btn_login.pack()
+
+        # Versión del sistema
+        ctk.CTkLabel(
+            self.panel_form, text="v1.0  |  © 2026 Farmacentric",
+            font=("Segoe UI", 10),
+            text_color=COLORS["border"]
+        ).place(relx=0.5, rely=0.95, anchor="center")
 
     def validar_login(self):
-        """Esta función conecta la interfaz gráfica con tu carpeta de lógica"""
-        # Obtenemos lo que el usuario escribió
+        """Conecta la interfaz gráfica con la lógica de autenticación."""
         user = self.entrada_usuario.get()
         password = self.entrada_password.get()
 
-        # Limpiamos mensajes de error previos
-        self.lbl_error.configure(text="")
+        # Limpiar mensaje previo
+        self.lbl_error.configure(text="", text_color=COLORS["danger"])
 
-        # Validamos que no estén vacíos
         if not user or not password:
-            self.lbl_error.configure(text="Por favor, complete todos los campos.")
+            self.lbl_error.configure(text="⚠  Por favor, complete todos los campos.")
             return
 
-        # ¡AQUÍ ESTÁ LA MAGIA! Llamamos a tu archivo logica_auth.py
+        # Deshabilitar botón durante validación
+        self.btn_login.configure(state="disabled", text="Verificando...")
+
         respuesta = iniciar_sesion(user, password)
 
         if respuesta["exito"]:
-            self.lbl_error.configure(text=respuesta["mensaje"], text_color="green")
+            self.lbl_error.configure(
+                text=f"✓  {respuesta['mensaje']}",
+                text_color=COLORS["success_text"]
+            )
             rol_usuario = respuesta["datos_usuario"]["rol"]
-            
-            # Si es administrador, abrimos su Dashboard
+
             if rol_usuario == "Administrador":
-                self.withdraw() # Ocultamos la ventana de Login
-                ventana_admin = DashboardAdmin(self) # Creamos la ventana de Admin
-                
-               # ¡CORRECCIÓN!: Si el usuario le da a la 'X' de la ventana, cerramos toda la aplicación
+                self.withdraw()
+                ventana_admin = DashboardAdmin(self)
                 ventana_admin.protocol("WM_DELETE_WINDOW", self.destroy)
-                
+
             elif rol_usuario == "Cajero/Farmacéutico":
                 self.withdraw()
                 ventana_cajero = VistaCajero(self)
                 ventana_cajero.protocol("WM_DELETE_WINDOW", self.destroy)
-            
+
             elif rol_usuario == "Contador/RRHH":
                 self.withdraw()
                 ventana_rrhh = VistaRRHH(self)
                 ventana_rrhh.protocol("WM_DELETE_WINDOW", self.destroy)
             else:
-                print(f"La vista para el rol {rol_usuario} aún no está construida.")
-                
+                print(f"La vista para el rol '{rol_usuario}' aún no está construida.")
+                self.btn_login.configure(state="normal", text="Iniciar Sesión  →")
         else:
-            self.lbl_error.configure(text=respuesta["mensaje"], text_color="red")
+            self.lbl_error.configure(
+                text=f"✗  {respuesta['mensaje']}",
+                text_color=COLORS["danger"]
+            )
+            self.btn_login.configure(state="normal", text="Iniciar Sesión  →")
 
     def cerrar_sesion(self, ventana_top):
-        """Cierra el dashboard y vuelve a mostrar el login limpio"""
+        """Cierra el dashboard y vuelve a mostrar el login limpio."""
         ventana_top.destroy()
         self.entrada_usuario.delete(0, 'end')
         self.entrada_password.delete(0, 'end')
         self.lbl_error.configure(text="")
-        self.deiconify() # Vuelve a mostrar el login
+        self.btn_login.configure(state="normal", text="Iniciar Sesión  →")
+        self.deiconify()
+
 
 # Ejecutamos la aplicación
 if __name__ == "__main__":
