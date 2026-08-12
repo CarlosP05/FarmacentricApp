@@ -1,6 +1,8 @@
 import customtkinter as ctk
 from logica.logica_alertas import obtener_dashboard_alertas
 from logica.logica_finanzas import generar_reporte_financiero
+from vistas.vista_usuarios import VistaUsuarios
+from vistas.vista_inventario import VistaInventario
 
 class DashboardAdmin(ctk.CTkToplevel):
     def __init__(self, master=None):
@@ -36,11 +38,23 @@ class DashboardAdmin(ctk.CTkToplevel):
         self.btn_inicio = ctk.CTkButton(self.sidebar_frame, text="Inicio (Dashboard)")
         self.btn_inicio.grid(row=1, column=0, padx=20, pady=10)
 
-        self.btn_usuarios = ctk.CTkButton(self.sidebar_frame, text="Gestión de Usuarios", fg_color="transparent", border_width=1, text_color=("gray10", "#DCE4EE"))
+        # Cambia esta línea:
+        self.btn_usuarios = ctk.CTkButton(self.sidebar_frame, text="Gestión de Usuarios", fg_color="transparent", border_width=1, text_color=("gray10", "#DCE4EE"), command=self.abrir_gestion_usuarios)
         self.btn_usuarios.grid(row=2, column=0, padx=20, pady=10)
-
+        
+        self.btn_inventario = ctk.CTkButton(self.sidebar_frame, text="Gestión de Inventario", fg_color="transparent", border_width=1, text_color=("gray10", "#DCE4EE"), command=self.abrir_gestion_inventario)
+        self.btn_inventario.grid(row=3, column=0, padx=20, pady=10)
+        
         self.btn_salir = ctk.CTkButton(self.sidebar_frame, text="Cerrar Sesión", fg_color="#d32f2f", hover_color="#b71c1c", command=lambda: self.master.cerrar_sesion(self))
         self.btn_salir.grid(row=5, column=0, padx=20, pady=20)
+        
+    def abrir_gestion_usuarios(self):
+        # Abre la ventana de usuarios encima del Dashboard
+        VistaUsuarios(self)
+        
+    def abrir_gestion_inventario(self):
+        # Abre la ventana de inventario encima del Dashboard
+        VistaInventario(self)
 
     def crear_area_principal(self):
         """Crea el área central donde se muestra la información"""

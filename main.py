@@ -2,6 +2,8 @@ import customtkinter as ctk
 # Importamos la lógica que moviste a la nueva carpeta
 from logica.logica_auth import iniciar_sesion
 from vistas.vista_admin import DashboardAdmin
+from vistas.vista_cajero import VistaCajero
+from vistas.vista_rrhh import VistaRRHH
 
 # 1. Configuración global de la estética (UI/UX)
 ctk.set_appearance_mode("Light")  # "Light" ideal para sistemas de salud. "Dark" también disponible.
@@ -77,6 +79,16 @@ class AplicacionFarmacentric(ctk.CTk):
                 
                # ¡CORRECCIÓN!: Si el usuario le da a la 'X' de la ventana, cerramos toda la aplicación
                 ventana_admin.protocol("WM_DELETE_WINDOW", self.destroy)
+                
+            elif rol_usuario == "Cajero/Farmacéutico":
+                self.withdraw()
+                ventana_cajero = VistaCajero(self)
+                ventana_cajero.protocol("WM_DELETE_WINDOW", self.destroy)
+            
+            elif rol_usuario == "Contador/RRHH":
+                self.withdraw()
+                ventana_rrhh = VistaRRHH(self)
+                ventana_rrhh.protocol("WM_DELETE_WINDOW", self.destroy)
             else:
                 print(f"La vista para el rol {rol_usuario} aún no está construida.")
                 

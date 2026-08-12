@@ -10,6 +10,41 @@ def buscar_producto_por_id(id_producto):
         if producto["id_producto"] == id_producto:
             return producto
     return None
+def calcular_venta(carrito):
+    """
+    Recibe una lista de artículos (el carrito de compras) y calcula los totales
+    sin descontar del inventario (solo para previsualizar el ticket).
+    """
+    total_cordobas = 0.0
+    detalle_factura = []
+    alertas_receta = []
+
+    for item in carrito:
+        producto = buscar_producto_por_id(item["id_producto"])
+        
+        if producto:
+            subtotal = producto["precio_venta"] * item["cantidad"]
+            total_cordobas += subtotal
+            
+            # Guardamos el detalle limpio para el ticket
+            detalle_factura.append({
+                "producto": producto["nombre"],
+                "cantidad": item["cantidad"],
+                "precio_uni": producto["precio_venta"],
+                "subtotal": subtotal
+            })
+            
+            # Verificamos si requiere receta
+            if producto["requiere_receta"]:
+                alertas_receta.append(producto["nombre"])
+
+    # Retornamos todo empacado en un diccionario
+    return {
+        "exito": True,
+        "detalle": detalle_factura,
+        "total_pagar": total_cordobas,
+        "pedir_recetas_para": alertas_receta
+    }
 
 def calcular_stock_total(id_producto):
     """Calcula el stock real sumando todos los lotes vigentes de un producto."""
